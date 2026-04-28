@@ -51,3 +51,4 @@ src/
 - [發布清單](docs/sdd/05-release-checklist.md)
 - [手動驗收腳本](docs/sdd/06-manual-test-script.md)
 - [v1 發布摘要](docs/sdd/07-v1-release-summary.md)
+- [同步版架構](docs/sdd/08-sync-architecture.md)

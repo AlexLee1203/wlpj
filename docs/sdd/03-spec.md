@@ -11,6 +11,7 @@
 - 資料庫：瀏覽器本地儲存，優先使用 `localStorage` 作為第一版方案；若之後資料模型變複雜，可升級到 `IndexedDB`。
 - 部署方式：靜態網站部署，可放在 Vercel、Netlify 或 GitHub Pages。
 - PWA：提供 `manifest` 與 `service worker`，支援加入主畫面與基本離線載入。
+- 同步版方向：使用 `Supabase Auth + Postgres + Realtime` 取代單機資料來源。
 
 ## 模組切分
 
