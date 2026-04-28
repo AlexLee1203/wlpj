@@ -16,7 +16,8 @@ export default defineConfig({
         theme_color: '#f15a29',
         background_color: '#fff8ef',
         display: 'standalone',
-        start_url: '/',
+        start_url: '/wlpj/',
+        scope: '/wlpj/',
         icons: [
           {
             src: 'pwa-192x192.png',
