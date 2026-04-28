@@ -343,7 +343,7 @@ export default function App() {
 
       setIsOtpSent(true);
       setAuthOtp('');
-      setAuthMessage('驗證碼已寄出，請回到 App 輸入 6 碼驗證碼。');
+      setAuthMessage('驗證碼已寄出，請回到 App 輸入 8 碼驗證碼。');
     } catch (submitError) {
       setAuthError(submitError instanceof Error ? submitError.message : '寄送驗證碼失敗。');
     } finally {

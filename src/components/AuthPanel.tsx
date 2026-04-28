@@ -64,13 +64,13 @@ export default function AuthPanel({
               inputMode="numeric"
               autoComplete="one-time-code"
               value={otp}
-              onChange={(event) => onOtpChange(event.target.value.replace(/\D/g, '').slice(0, 6))}
-              placeholder="輸入 6 碼驗證碼"
+              onChange={(event) => onOtpChange(event.target.value.replace(/\D/g, '').slice(0, 8))}
+              placeholder="輸入 8 碼驗證碼"
             />
           </label>
 
           <div className="auth-actions">
-            <button type="submit" disabled={isVerifyingCode || otp.length !== 6}>
+            <button type="submit" disabled={isVerifyingCode || otp.length !== 8}>
               {isVerifyingCode ? '驗證中...' : '確認登入'}
             </button>
             <button type="button" className="secondary-button" onClick={onResetOtp}>
