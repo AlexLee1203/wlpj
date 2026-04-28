@@ -54,9 +54,12 @@ export default function App() {
   const [formFocusTrigger, setFormFocusTrigger] = useState(0);
   const [session, setSession] = useState<Session | null>(null);
   const [authEmail, setAuthEmail] = useState('');
+  const [authOtp, setAuthOtp] = useState('');
+  const [isOtpSent, setIsOtpSent] = useState(false);
   const [authMessage, setAuthMessage] = useState<string | null>(null);
   const [authError, setAuthError] = useState<string | null>(null);
-  const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
+  const [isSendingCode, setIsSendingCode] = useState(false);
+  const [isVerifyingCode, setIsVerifyingCode] = useState(false);
 
   async function refreshLogs() {
     const rows = await listExerciseLogs();
@@ -315,7 +318,7 @@ export default function App() {
     }
   }
 
-  async function handleAuthSubmit(event: React.FormEvent<HTMLFormElement>) {
+  async function handleRequestOtp(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
 
     if (!supabase) {
@@ -324,12 +327,13 @@ export default function App() {
     }
 
     try {
-      setIsAuthSubmitting(true);
+      setIsSendingCode(true);
       setAuthError(null);
+      setAuthMessage(null);
       const { error: signInError } = await supabase.auth.signInWithOtp({
         email: authEmail,
         options: {
-          emailRedirectTo: `${window.location.origin}${window.location.pathname}`
+          shouldCreateUser: true
         }
       });
 
@@ -337,11 +341,44 @@ export default function App() {
         throw signInError;
       }
 
-      setAuthMessage('登入連結已寄出，請到信箱開啟連結後回到這個頁面。');
+      setIsOtpSent(true);
+      setAuthOtp('');
+      setAuthMessage('驗證碼已寄出，請回到 App 輸入 6 碼驗證碼。');
     } catch (submitError) {
-      setAuthError(submitError instanceof Error ? submitError.message : '寄送登入連結失敗。');
+      setAuthError(submitError instanceof Error ? submitError.message : '寄送驗證碼失敗。');
     } finally {
-      setIsAuthSubmitting(false);
+      setIsSendingCode(false);
+    }
+  }
+
+  async function handleVerifyOtp(event: React.FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+
+    if (!supabase) {
+      setAuthError('Supabase 尚未設定。');
+      return;
+    }
+
+    try {
+      setIsVerifyingCode(true);
+      setAuthError(null);
+      const { error: verifyError } = await supabase.auth.verifyOtp({
+        email: authEmail,
+        token: authOtp,
+        type: 'email'
+      });
+
+      if (verifyError) {
+        throw verifyError;
+      }
+
+      setAuthMessage('登入成功。');
+      setIsOtpSent(false);
+      setAuthOtp('');
+    } catch (submitError) {
+      setAuthError(submitError instanceof Error ? submitError.message : '驗證碼登入失敗。');
+    } finally {
+      setIsVerifyingCode(false);
     }
   }
 
@@ -354,6 +391,15 @@ export default function App() {
     setLogs([]);
     setSession(null);
     setAuthMessage(null);
+    setAuthOtp('');
+    setIsOtpSent(false);
+  }
+
+  function handleResetOtp() {
+    setIsOtpSent(false);
+    setAuthOtp('');
+    setAuthMessage(null);
+    setAuthError(null);
   }
 
   return (
@@ -377,11 +423,17 @@ export default function App() {
       {!session ? (
         <AuthPanel
           email={authEmail}
+          otp={authOtp}
           message={authMessage}
           error={authError}
-          isSubmitting={isAuthSubmitting}
+          isSendingCode={isSendingCode}
+          isVerifyingCode={isVerifyingCode}
+          isOtpSent={isOtpSent}
           onEmailChange={setAuthEmail}
-          onSubmit={handleAuthSubmit}
+          onOtpChange={setAuthOtp}
+          onRequestOtp={handleRequestOtp}
+          onVerifyOtp={handleVerifyOtp}
+          onResetOtp={handleResetOtp}
         />
       ) : null}
 
