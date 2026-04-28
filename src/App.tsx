@@ -97,19 +97,19 @@ export default function App() {
     let ignore = false;
 
     void listExerciseLogs()
-      .then((rows) => {
+      .then((rows: ExerciseLogRow[]) => {
         if (!ignore) {
           setLogs(rows.map(mapRowToExerciseLog));
         }
       })
-      .catch((loadError) => {
+      .catch((loadError: unknown) => {
         if (!ignore) {
           setError(loadError instanceof Error ? loadError.message : '載入雲端資料失敗。');
         }
       });
 
     const unsubscribe = subscribeExerciseLogs(() => {
-      void listExerciseLogs().then((rows) => {
+      void listExerciseLogs().then((rows: ExerciseLogRow[]) => {
         if (!ignore) {
           setLogs(rows.map(mapRowToExerciseLog));
         }
