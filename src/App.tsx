@@ -58,6 +58,11 @@ export default function App() {
   const [authError, setAuthError] = useState<string | null>(null);
   const [isAuthSubmitting, setIsAuthSubmitting] = useState(false);
 
+  async function refreshLogs() {
+    const rows = await listExerciseLogs();
+    setLogs(rows.map(mapRowToExerciseLog));
+  }
+
   useEffect(() => {
     if (!supabase) {
       setAuthError('Supabase 尚未設定，請先確認 .env 內的 URL 與 anon key。');
@@ -167,6 +172,7 @@ export default function App() {
         });
       }
 
+      await refreshLogs();
       setForm(createExerciseFormState());
       setError(null);
       setIsFormOpen(false);
@@ -183,6 +189,7 @@ export default function App() {
 
     try {
       await updateExerciseLogRemote(id, { completed: !target.completed });
+      await refreshLogs();
     } catch (toggleError) {
       setError(toggleError instanceof Error ? toggleError.message : '更新完成狀態失敗。');
     }
@@ -242,6 +249,7 @@ export default function App() {
 
     try {
       await deleteExerciseLogRemote(id);
+      await refreshLogs();
 
       if (editingLogId === id) {
         setEditingLogId(null);
@@ -295,6 +303,7 @@ export default function App() {
 
     try {
       await deleteExerciseLogsByDateRemote(selectedDate);
+      await refreshLogs();
 
       if (editingLogId && filteredLogs.some((log) => log.id === editingLogId)) {
         setEditingLogId(null);
