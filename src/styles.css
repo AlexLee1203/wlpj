@@ -218,6 +218,16 @@ button {
   font-weight: 700;
 }
 
+.calendar-day.all-completed {
+  border-color: rgba(34, 197, 94, 0.28);
+  background: linear-gradient(180deg, #f1fff5 0%, #dcfce7 100%);
+}
+
+.calendar-day.all-completed .calendar-day-meta {
+  color: #15803d;
+  font-weight: 700;
+}
+
 .calendar-day-number {
   display: block;
   font-weight: 700;

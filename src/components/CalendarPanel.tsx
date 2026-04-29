@@ -55,6 +55,7 @@ export default function CalendarPanel({
           const count = summary.count;
           const isSelected = day.date === selectedDate;
           const isOverdueIncomplete = day.date < today && summary.hasIncomplete;
+          const isAllCompleted = count > 0 && !summary.hasIncomplete;
 
           return (
             <button
@@ -65,7 +66,8 @@ export default function CalendarPanel({
                 day.inCurrentMonth ? 'current-month' : 'other-month',
                 isSelected ? 'selected' : '',
                 count > 0 ? 'has-logs' : '',
-                isOverdueIncomplete ? 'overdue-incomplete' : ''
+                isOverdueIncomplete ? 'overdue-incomplete' : '',
+                isAllCompleted ? 'all-completed' : ''
               ]
                 .filter(Boolean)
                 .join(' ')}
@@ -75,6 +77,8 @@ export default function CalendarPanel({
               <span className="calendar-day-meta">
                 {isOverdueIncomplete
                   ? `${count} 筆未完成 😢`
+                  : isAllCompleted
+                    ? `${count} 筆完成 😊`
                   : count > 0
                     ? `${count} 筆`
                     : '\u00a0'}
