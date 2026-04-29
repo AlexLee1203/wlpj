@@ -138,11 +138,19 @@ export default function App() {
   const hasAnyLogs = logs.length > 0;
   const today = todayString();
   const logsSummaryByDate = logs.reduce<
-    Record<string, { count: number; hasIncomplete: boolean }>
+    Record<string, { count: number; completedCount: number; incompleteCount: number }>
   >((summary, log) => {
-    const current = summary[log.date] ?? { count: 0, hasIncomplete: false };
+    const current = summary[log.date] ?? {
+      count: 0,
+      completedCount: 0,
+      incompleteCount: 0
+    };
     current.count += 1;
-    current.hasIncomplete ||= !log.completed;
+    if (log.completed) {
+      current.completedCount += 1;
+    } else {
+      current.incompleteCount += 1;
+    }
     summary[log.date] = current;
     return summary;
   }, {});

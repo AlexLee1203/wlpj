@@ -3,7 +3,7 @@ import { formatMonthLabel, getMonthCalendarDays } from '../utils/date';
 type CalendarPanelProps = {
   selectedDate: string;
   visibleMonth: string;
-  logsSummaryByDate: Record<string, { count: number; hasIncomplete: boolean }>;
+  logsSummaryByDate: Record<string, { count: number; completedCount: number; incompleteCount: number }>;
   today: string;
   onSelectDate: (date: string) => void;
   onMoveMonth: (amount: number) => void;
@@ -51,11 +51,15 @@ export default function CalendarPanel({
 
       <div className="calendar-grid">
         {days.map((day) => {
-          const summary = logsSummaryByDate[day.date] ?? { count: 0, hasIncomplete: false };
+          const summary = logsSummaryByDate[day.date] ?? {
+            count: 0,
+            completedCount: 0,
+            incompleteCount: 0
+          };
           const count = summary.count;
           const isSelected = day.date === selectedDate;
-          const isOverdueIncomplete = day.date < today && summary.hasIncomplete;
-          const isAllCompleted = count > 0 && !summary.hasIncomplete;
+          const isOverdueIncomplete = day.date < today && summary.incompleteCount > 0;
+          const isAllCompleted = count > 0 && summary.incompleteCount === 0;
 
           return (
             <button
@@ -76,11 +80,11 @@ export default function CalendarPanel({
               <span className="calendar-day-number">{day.day}</span>
               <span className="calendar-day-meta">
                 {isOverdueIncomplete
-                  ? `${count} 筆未完成 😢`
+                  ? `${summary.completedCount} 完成 / ${summary.incompleteCount} 未完成 😢`
                   : isAllCompleted
-                    ? `${count} 筆完成 😊`
+                    ? `${summary.completedCount} 完成 😊`
                   : count > 0
-                    ? `${count} 筆`
+                    ? `${summary.completedCount} 完成 / ${summary.incompleteCount} 未完成`
                     : '\u00a0'}
               </span>
             </button>
