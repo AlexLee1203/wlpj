@@ -3,7 +3,8 @@ import { formatMonthLabel, getMonthCalendarDays } from '../utils/date';
 type CalendarPanelProps = {
   selectedDate: string;
   visibleMonth: string;
-  logsCountByDate: Record<string, number>;
+  logsSummaryByDate: Record<string, { count: number; hasIncomplete: boolean }>;
+  today: string;
   onSelectDate: (date: string) => void;
   onMoveMonth: (amount: number) => void;
   onOpenCreate: () => void;
@@ -14,7 +15,8 @@ const WEEKDAY_LABELS = ['日', '一', '二', '三', '四', '五', '六'];
 export default function CalendarPanel({
   selectedDate,
   visibleMonth,
-  logsCountByDate,
+  logsSummaryByDate,
+  today,
   onSelectDate,
   onMoveMonth,
   onOpenCreate
@@ -49,8 +51,10 @@ export default function CalendarPanel({
 
       <div className="calendar-grid">
         {days.map((day) => {
-          const count = logsCountByDate[day.date] ?? 0;
+          const summary = logsSummaryByDate[day.date] ?? { count: 0, hasIncomplete: false };
+          const count = summary.count;
           const isSelected = day.date === selectedDate;
+          const isOverdueIncomplete = day.date < today && summary.hasIncomplete;
 
           return (
             <button
@@ -60,7 +64,8 @@ export default function CalendarPanel({
                 'calendar-day',
                 day.inCurrentMonth ? 'current-month' : 'other-month',
                 isSelected ? 'selected' : '',
-                count > 0 ? 'has-logs' : ''
+                count > 0 ? 'has-logs' : '',
+                isOverdueIncomplete ? 'overdue-incomplete' : ''
               ]
                 .filter(Boolean)
                 .join(' ')}
@@ -68,7 +73,11 @@ export default function CalendarPanel({
             >
               <span className="calendar-day-number">{day.day}</span>
               <span className="calendar-day-meta">
-                {count > 0 ? `${count} 筆` : '\u00a0'}
+                {isOverdueIncomplete
+                  ? `${count} 筆未完成 😢`
+                  : count > 0
+                    ? `${count} 筆`
+                    : '\u00a0'}
               </span>
             </button>
           );

@@ -208,6 +208,16 @@ button {
   color: #b94823;
 }
 
+.calendar-day.overdue-incomplete {
+  border-color: rgba(239, 68, 68, 0.28);
+  background: linear-gradient(180deg, #fff4f4 0%, #ffe8e8 100%);
+}
+
+.calendar-day.overdue-incomplete .calendar-day-meta {
+  color: #b91c1c;
+  font-weight: 700;
+}
+
 .calendar-day-number {
   display: block;
   font-weight: 700;

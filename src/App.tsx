@@ -136,9 +136,15 @@ export default function App() {
   const completionRate = getCompletionRate(filteredLogs);
   const dateLabel = formatDateLabel(selectedDate);
   const hasAnyLogs = logs.length > 0;
-  const logsCountByDate = logs.reduce<Record<string, number>>((counts, log) => {
-    counts[log.date] = (counts[log.date] ?? 0) + 1;
-    return counts;
+  const today = todayString();
+  const logsSummaryByDate = logs.reduce<
+    Record<string, { count: number; hasIncomplete: boolean }>
+  >((summary, log) => {
+    const current = summary[log.date] ?? { count: 0, hasIncomplete: false };
+    current.count += 1;
+    current.hasIncomplete ||= !log.completed;
+    summary[log.date] = current;
+    return summary;
   }, {});
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
@@ -456,7 +462,8 @@ export default function App() {
             <CalendarPanel
               selectedDate={selectedDate}
               visibleMonth={visibleMonth}
-              logsCountByDate={logsCountByDate}
+              logsSummaryByDate={logsSummaryByDate}
+              today={today}
               onSelectDate={handleDateChange}
               onMoveMonth={(amount) => setVisibleMonth(shiftMonth(visibleMonth, amount))}
               onOpenCreate={handleOpenCreate}
